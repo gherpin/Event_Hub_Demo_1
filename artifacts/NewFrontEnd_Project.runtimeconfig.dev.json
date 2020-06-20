@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\gherpin\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\gherpin\\.nuget\\packages"
+    ]
+  }
+}
