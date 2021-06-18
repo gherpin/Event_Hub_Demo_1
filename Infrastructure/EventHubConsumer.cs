@@ -9,8 +9,9 @@ using System.Text;
 using Microsoft.Extensions.Hosting;
 using System.Threading;
 using System.Text.Json;
+using System.Diagnostics;
 
-namespace FoodTruckWebsite_Notification_Service.Infrastructure
+namespace EventHub_Notification_Service_Demo.Infrastructure
 {
   /// <summary>
   /// This will have to be added to each application that consumes data from the Azure Event Hub
@@ -66,10 +67,14 @@ namespace FoodTruckWebsite_Notification_Service.Infrastructure
       var data = Encoding.UTF8.GetString(arg.Data.Body.ToArray());      
       var receivedEvent = JsonSerializer.Deserialize<ReceivedEvent>(data);
       var notificationServiceEvent = new NotificationServiceEvent(receivedEvent);
-      await _eventProcessor.BeginProcessAsync(notificationServiceEvent);
+
       // Update checkpoint in the blob storage so that the app receives only new events the next time it's run - Prevents message from being executed twice
-      await _eventProcessor.ProcessAsync(notificationServiceEvent);
       await arg.UpdateCheckpointAsync(arg.CancellationToken);
+      Debug.WriteLine(data);
+      await _eventProcessor.BeginProcessAsync(notificationServiceEvent);
+    
+      await _eventProcessor.ProcessAsync(notificationServiceEvent);
+     
       await _eventProcessor.EndProcessAsync(notificationServiceEvent);
     }
 

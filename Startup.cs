@@ -1,4 +1,4 @@
-using FoodTruckWebsite_Notification_Service.Infrastructure;
+using EventHub_Notification_Service_Demo.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace FoodTruckWebsite_Notification_Service
+namespace EventHub_Notification_Service_Demo
 {
   public class Startup
     {
@@ -23,8 +23,12 @@ namespace FoodTruckWebsite_Notification_Service
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.Configure<ConnectionStrings>(Configuration.GetSection("ConnectionStrings"));
+           
             services.AddHostedService<EventHubConsumer>();
+
             services.AddSingleton<IEventProcessor, EventProcessor>();
+            services.AddSingleton<IEventHubPublisher, EventHubPublisher>();
+            services.AddSingleton<MessageHub, MessageHub>();
             services.AddSignalR();
 
             // In production, the React files will be served from this directory

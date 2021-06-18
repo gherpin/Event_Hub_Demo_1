@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FoodTruckWebsite_Notification_Service.Infrastructure
+namespace EventHub_Notification_Service_Demo.Infrastructure
 {
   public class ReceivedEvent {
 

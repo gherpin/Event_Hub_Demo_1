@@ -1,4 +1,4 @@
-﻿namespace FoodTruckWebsite_Notification_Service
+﻿namespace EventHub_Notification_Service_Demo
 {
   public class ConnectionStrings
   {

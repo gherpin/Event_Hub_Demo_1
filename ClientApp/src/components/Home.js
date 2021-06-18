@@ -4,13 +4,7 @@ import { useState, useEffect } from 'react'
 
 import { setupSignalRConnection } from '../services/signalR';
 
-const ProgressBar = (props) => {
-
-  const [currentValue] = useState(props.currentValue);
-  const [eventName] = useState(props.eventName);
-  const [backgroundStyle] = useState(props.background || '');
-  const [animated] = useState(props.animated);
-  const [progressBarStyle] = useState(props.stripedBar);
+const ProgressBar = ({ currentValue, eventName, backgroundStyle, animated, progressBarStyle }) => {
 
   const animatedStyle = animated ? 'progress-bar-animated' : '';
   const stripedStyle = progressBarStyle ? 'progress-bar-striped' : '';
@@ -25,7 +19,6 @@ const ProgressBar = (props) => {
 const EventCard = ({ sourceName, receivedEvents }) => {
 
   const [eventSource] = useState(sourceName || 'Event Source');
- // const [events] = useState(receivedEvents || []);
 
   const determineProgressBarCompletion = receivedEvent => {
     
@@ -58,13 +51,11 @@ const EventCard = ({ sourceName, receivedEvents }) => {
 
     let currentValue = determineProgressBarCompletion(receivedEvent);
     let animated = currentValue < 100 ? true : false;
-    let stripedBar = currentValue < 100 ? true : false;
+    let progressBarStyle = currentValue < 100 ? true : false;
     let backgroundStyle = determineBackGroundStyle(receivedEvent);
-
-   //console.log(currentValue, animated, stripedBar, backgroundStyle);
     
     return (
-      <ProgressBar key={receivedEvent.id} currentValue={currentValue} eventSource={receivedEvent.receivedEvent.eventSource} eventName={receivedEvent.receivedEvent.eventName} background={backgroundStyle} animated={animated} stripedBar={stripedBar} />
+      <ProgressBar key={receivedEvent.id} currentValue={currentValue} eventSource={receivedEvent.receivedEvent.eventSource} eventName={receivedEvent.receivedEvent.eventName} backgroundStyle={backgroundStyle} animated={animated} progressBarStyle={progressBarStyle} />
     );
   });
 
@@ -72,10 +63,10 @@ const EventCard = ({ sourceName, receivedEvents }) => {
     <div className="card">
       <div className="card-header">{eventSource}</div>
       <div className="card-body">
-        <h5 className="card-title">Most Recent Events</h5>
+        <h6 className="card-title">Last 20 Events</h6>
         {eventProgressBars}
         {eventProgressBars.length == 0 &&
-          <h6>No recent events</h6>
+          <p>No recent events</p>
         }
       </div>
       <div className="card-footer">
@@ -96,6 +87,7 @@ const Home = () => {
   const [accountManagementAPIEvents, setAccountManagementAPIEvents] = useState([]);
   const [menuManagementAPIEvents, setMenuManagementAPIEvents] = useState([]);
   const [paymentManagementAPIEvents, setPaymentManagementAPIEvents] = useState([]);
+  const [eventCounter, setEventCounter] = useState(0);
 
   const eventSources = {
     
@@ -155,6 +147,11 @@ const Home = () => {
       //Set Up events before starting hub
       hubConnection.on("eventReceived", e => {
 
+        setEventCounter(eventCounter => eventCounter + 1);
+        //In Summary Components Store cumulative number of events
+
+        //Card will only show the last 20 events. so calculated 
+
         //rewrite to obtain from dicationary of strings and the setStatefunction
         var setEvents = eventSources[e.receivedEvent.eventSource]; //return setState function
         setEvents(e);
@@ -169,7 +166,7 @@ const Home = () => {
         console.log('Connection successful!')
 
         //Test Methods for development
-        hubConnection.invoke("SimulateEvents");
+        hubConnection.invoke("SimulateEvents", 1);
 
       } catch (err) {
         console.log(err);
@@ -180,13 +177,12 @@ const Home = () => {
     createHubConnection();
   }, []);
 
-  const simulateEvents = () => {
-    hubConnection.invoke("SimulateEvents");
-  }
+ 
 
   return (
     <>
-      <button onClick={simulateEvents} >Simulate Events</button>
+      
+      <Header hubConnection={hubConnection} eventCounter={eventCounter} />
       <div className="card-group">
         <EventCard sourceName="AccountManagement_API" receivedEvents={accountManagementAPIEvents} />
         <EventCard sourceName="FoodTruckManagement_API" receivedEvents={foodTruckManagementAPIEvents} />
@@ -196,6 +192,25 @@ const Home = () => {
         </div>
     </>
     );
+}
+
+const Header = ({ hubConnection, eventCounter }) => {
+
+  const simulateEvents = () => {
+    hubConnection.invoke("SimulateEvents", 10);
+  }
+
+  return (
+    <>
+      <div className="row">
+        <div className="col">
+          <h1>Food Truck Notification Service</h1>
+          <button onClick={simulateEvents} >Simulate Events</button>
+          <h6>Events - {eventCounter} </h6>
+        </div>
+      </div>
+    </>
+  )
 }
 
 export default Home;

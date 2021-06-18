@@ -1,11 +1,14 @@
-﻿using FoodTruckWebsite_Notification_Service.Infrastructure;
+﻿using EventHub_Notification_Service_Demo.Infrastructure;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Azure.Messaging.EventHubs;
+using System.Text;
+using Newtonsoft.Json;
 
-namespace FoodTruckWebsite_Notification_Service
+namespace EventHub_Notification_Service_Demo
 {
   public class MessageHub : Hub {
 
@@ -25,14 +28,22 @@ namespace FoodTruckWebsite_Notification_Service
 
     private string[] eventProcessingOrder = { "StartedProcessingEvent", "ProcessingEvent", "FinishedProcessingEvent" };
 
-      public async Task SimulateEvents() {
+    private IEventHubPublisher _eventPublisher;
+
+    public MessageHub(IEventHubPublisher eventPublisher) {
+      _eventPublisher = eventPublisher;
+    }
+
+    public async Task SimulateEvents(int numberOfEvents) {
 
       var random = new Random();
       const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-      for (int i = 0; i < 10000; i++)
+      var batchEvents = new List<EventData>();
+      var batchSize = 10;
+
+      for (int i = 0; i < numberOfEvents; i++)
       {
-        await Task.Delay(100);
         var simulatedEvent = new ReceivedEvent
         {
           EventSource = EventSources[random.Next(0, 5)],
@@ -46,17 +57,30 @@ namespace FoodTruckWebsite_Notification_Service
           }
         };
 
-        var testNotificationServiceEvent = new NotificationServiceEvent(simulatedEvent);
+        var serializedSimulatedEvent = JsonConvert.SerializeObject(simulatedEvent);
+        var eventData = new EventData(Encoding.UTF8.GetBytes(serializedSimulatedEvent));
 
-        //Loop Through each Processing Event and send event
-        var eventStart = DateTimeOffset.UtcNow;
-        foreach (var step in eventProcessingOrder)
+        batchEvents.Add(eventData);
+
+        if (batchEvents.Count >= batchSize)
         {
-          testNotificationServiceEvent.ServiceEvents.Add(step, DateTimeOffset.UtcNow.ToString());
-
-
-          await SendEventReceived(testNotificationServiceEvent);
+          await _eventPublisher.SendBatch(batchEvents);
+          batchEvents.Clear();
         }
+
+
+
+      //  var testNotificationServiceEvent = new NotificationServiceEvent(simulatedEvent);
+
+      //  //Loop Through each Processing Event and send event
+      //  var eventStart = DateTimeOffset.UtcNow;
+      //  foreach (var step in eventProcessingOrder)
+      //  {
+      //    //await Task.Delay(random.Next(0,400)); //simulates latency in processing
+      //    testNotificationServiceEvent.ServiceEvents.Add(step, DateTimeOffset.UtcNow.ToString("o"));
+
+      //    await SendEventReceived(testNotificationServiceEvent);
+      //  }
       }
 
 
@@ -65,7 +89,11 @@ namespace FoodTruckWebsite_Notification_Service
     
 
     public async Task SendEventReceived(NotificationServiceEvent eventReceived) {
-        await Clients.All.SendAsync("eventReceived", eventReceived);
+       
+        if (Clients != null) {
+          await Clients.All.SendAsync("eventReceived", eventReceived);
+        }
+        
       }
     }
 }
