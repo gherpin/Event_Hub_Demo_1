@@ -13,17 +13,17 @@ namespace EventHub_Notification_Service_Demo
   public class MessageHub : Hub {
 
     private const string NotificationEventSource = "Notification_Service";
-    private const string FoodTruckManagementAPIEventSource = "FoodTruckManagement_API";
+    private const string EnrollmentAPIEventSource = "Enrollment_API";
     private const string AccountManagementAPIEventSource = "AccountManagement_API";
-    private const string MenuManagementAPIEventSource = "MenuManagement_API";
-    private const string PaymentManagementAPIEventSource = "PaymentManagement_API";
+    private const string HouseholdAPIEventSource = "Household_API";
+    private const string ShoppingCartAPIEventSource = "ShoppingCart_API";
 
     private string[] EventSources = {
       NotificationEventSource,
-      FoodTruckManagementAPIEventSource,
+      EnrollmentAPIEventSource,
       AccountManagementAPIEventSource,
-      MenuManagementAPIEventSource,
-      PaymentManagementAPIEventSource
+      HouseholdAPIEventSource,
+      ShoppingCartAPIEventSource
     };
 
     private string[] eventProcessingOrder = { "StartedProcessingEvent", "ProcessingEvent", "FinishedProcessingEvent" };

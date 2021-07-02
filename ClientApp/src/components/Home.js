@@ -83,10 +83,10 @@ const Home = () => {
   const [hubConnection, setHubConnection] = useState({});
   // //This app just needs to be a dash board of the events being consumed by each publisher
   const [notificationServiceEvents, setNotificationServiceEvents] = useState([]);
-  const [foodTruckManagementAPIEvents, setFoodTruckManagementAPIEvents] = useState([]);
+  const [enrollmentAPIEvents, setenrollmentAPIEvents] = useState([]);
   const [accountManagementAPIEvents, setAccountManagementAPIEvents] = useState([]);
-  const [menuManagementAPIEvents, setMenuManagementAPIEvents] = useState([]);
-  const [paymentManagementAPIEvents, setPaymentManagementAPIEvents] = useState([]);
+  const [householdAPIEventSource, sethouseholdAPIEventSource] = useState([]);
+  const [shoppingCartAPIEvents, setshoppingCartAPIEvents] = useState([]);
   const [eventCounter, setEventCounter] = useState(0);
 
   const eventSources = {
@@ -96,9 +96,9 @@ const Home = () => {
         return updateEventArray(notificationServiceEvents, event);
       });
     },
-    "FoodTruckManagement_API": (event) => {
-      setFoodTruckManagementAPIEvents(foodTruckManagementAPIEvents => {
-        return updateEventArray(foodTruckManagementAPIEvents, event)
+    "Enrollment_API": (event) => {
+      setenrollmentAPIEvents(enrollmentAPIEvents => {
+        return updateEventArray(enrollmentAPIEvents, event)
       });
     },
     "AccountManagement_API": (event) => {
@@ -106,14 +106,14 @@ const Home = () => {
         return updateEventArray(accountManagementAPIEvents, event);
       });
     },
-    "MenuManagement_API": (event) => {
-      setMenuManagementAPIEvents(menuManagementAPIEvents => {
-        return updateEventArray(menuManagementAPIEvents, event);
+    "Household_API": (event) => {
+      sethouseholdAPIEventSource(householdAPIEventSource => {
+        return updateEventArray(householdAPIEventSource, event);
       })
     },
-    "PaymentManagement_API": (event) => {
-      setPaymentManagementAPIEvents(paymentManagementAPIEvents => {
-        return updateEventArray(paymentManagementAPIEvents, event);
+    "ShoppingCart_API": (event) => {
+      setshoppingCartAPIEvents(shoppingCartAPIEvents => {
+        return updateEventArray(shoppingCartAPIEvents, event);
       });
     }
     //Add additional items as event sources increases
@@ -185,9 +185,9 @@ const Home = () => {
       <Header hubConnection={hubConnection} eventCounter={eventCounter} />
       <div className="card-group">
         <EventCard sourceName="AccountManagement_API" receivedEvents={accountManagementAPIEvents} />
-        <EventCard sourceName="FoodTruckManagement_API" receivedEvents={foodTruckManagementAPIEvents} />
-        <EventCard sourceName="MenuManagement_API" receivedEvents={menuManagementAPIEvents} />
-        <EventCard sourceName="PaymentManagement_API" receivedEvents={paymentManagementAPIEvents} />
+        <EventCard sourceName="Enrollment_API" receivedEvents={enrollmentAPIEvents} />
+        <EventCard sourceName="Household_API" receivedEvents={householdAPIEventSource} />
+        <EventCard sourceName="ShoppingCart_API" receivedEvents={shoppingCartAPIEvents} />
         <EventCard sourceName="Notification_Service" receivedEvents={notificationServiceEvents}/> 
         </div>
     </>
@@ -204,7 +204,7 @@ const Header = ({ hubConnection, eventCounter }) => {
     <>
       <div className="row">
         <div className="col">
-          <h1>Food Truck Notification Service</h1>
+          <h1>Notification Service</h1>
           <button onClick={simulateEvents} >Simulate Events</button>
           <h6>Events - {eventCounter} </h6>
         </div>
