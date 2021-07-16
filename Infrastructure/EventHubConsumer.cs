@@ -39,7 +39,7 @@ namespace EventHub_Notification_Service_Demo.Infrastructure
       _blobStorageClient = new BlobContainerClient(_blobStorageConnectionString, _blobContainerName);
 
       //Each consumer should use its own consumer group
-      string consumerGroup = "notification_service"; 
+      string consumerGroup = "$default"; 
 
       _eventProcessorClient = new EventProcessorClient(
         _blobStorageClient, 
