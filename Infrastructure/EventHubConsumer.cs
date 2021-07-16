@@ -67,14 +67,14 @@ namespace EventHub_Notification_Service_Demo.Infrastructure
       var data = Encoding.UTF8.GetString(arg.Data.Body.ToArray());      
       var receivedEvent = JsonSerializer.Deserialize<ReceivedEvent>(data);
       var notificationServiceEvent = new NotificationServiceEvent(receivedEvent);
-
+      var random = new Random();
       // Update checkpoint in the blob storage so that the app receives only new events the next time it's run - Prevents message from being executed twice
       await arg.UpdateCheckpointAsync(arg.CancellationToken);
       Debug.WriteLine(data);
       await _eventProcessor.BeginProcessAsync(notificationServiceEvent);
-    
+      Thread.Sleep(random.Next(200));
       await _eventProcessor.ProcessAsync(notificationServiceEvent);
-     
+      Thread.Sleep(random.Next(200));
       await _eventProcessor.EndProcessAsync(notificationServiceEvent);
     }
 
