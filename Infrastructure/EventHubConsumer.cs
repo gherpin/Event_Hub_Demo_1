@@ -72,9 +72,9 @@ namespace EventHub_Notification_Service_Demo.Infrastructure
       await arg.UpdateCheckpointAsync(arg.CancellationToken);
       Debug.WriteLine(data);
       await _eventProcessor.BeginProcessAsync(notificationServiceEvent);
-      Thread.Sleep(random.Next(200));
+      Thread.Sleep(random.Next(300));
       await _eventProcessor.ProcessAsync(notificationServiceEvent);
-      Thread.Sleep(random.Next(200));
+      Thread.Sleep(random.Next(300));
       await _eventProcessor.EndProcessAsync(notificationServiceEvent);
     }
 

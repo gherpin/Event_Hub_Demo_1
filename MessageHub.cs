@@ -59,7 +59,7 @@ namespace EventHub_Notification_Service_Demo
 
         var serializedSimulatedEvent = JsonConvert.SerializeObject(simulatedEvent);
         var eventData = new EventData(Encoding.UTF8.GetBytes(serializedSimulatedEvent));
-
+        
         batchEvents.Add(eventData);
 
         if (batchEvents.Count >= batchSize)
@@ -67,20 +67,6 @@ namespace EventHub_Notification_Service_Demo
           await _eventPublisher.SendBatch(batchEvents);
           batchEvents.Clear();
         }
-
-
-
-      //  var testNotificationServiceEvent = new NotificationServiceEvent(simulatedEvent);
-
-      //  //Loop Through each Processing Event and send event
-      //  var eventStart = DateTimeOffset.UtcNow;
-      //  foreach (var step in eventProcessingOrder)
-      //  {
-      //    //await Task.Delay(random.Next(0,400)); //simulates latency in processing
-      //    testNotificationServiceEvent.ServiceEvents.Add(step, DateTimeOffset.UtcNow.ToString("o"));
-
-      //    await SendEventReceived(testNotificationServiceEvent);
-      //  }
       }
 
 

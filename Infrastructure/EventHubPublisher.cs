@@ -49,6 +49,10 @@ namespace EventHub_Notification_Service_Demo.Infrastructure
             eventBatch.TryAdd(e);
           }
           await _producerClient.SendAsync(eventBatch);
+          //This is also where you would specify a partition key if needed to send similar events to same parition
+          //await _producerClient.SendAsync(new List<EventData> { }, new SendEventOptions { PartitionKey = "MyPartitionKey" });
+          //Recommended not to use this as you lose through put and load balancing between partitions
+          //The Key resolves to a hash
         }
       }
       catch (Exception ex) {
